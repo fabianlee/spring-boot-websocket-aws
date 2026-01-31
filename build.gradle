@@ -1,0 +1,80 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '4.0.2'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'org.fabianlee'
+version = '1.0.0'
+description = 'websockets example'
+
+// ADDED want standard name for jar so Dockerfile works without modification of <name>-<release>.jar
+bootJar {
+  archiveFileName = "springBoot.jar"
+}
+
+// ADDED ability to specify docker owner and version on command line
+ext.dockerOwner = project.hasProperty('dockerOwner') ? project.getProperty('dockerOwner'):'fabianlee'
+ext.dockerVersion = project.hasProperty('dockerVersion') ? project.getProperty('dockerVersion'):'1.0.0'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(25) // compile with 25
+	}
+	// https://www.baeldung.com/gradle-sourcecompatiblity-vs-targetcompatibility
+	targetCompatibility = '21' // generate source files compatible with Java 21
+	sourceCompatibility = '21'
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+	testImplementation 'org.springframework.boot:spring-boot-starter-actuator-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-websocket-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+// ADDED to make Dockerfile available in build directory
+task copyDockerfile(type: Copy) {
+  from 'src/main/resources/Dockerfile'
+  into 'build/libs'
+}
+
+ext.ownerProject = "${dockerOwner}/${project.name}"
+
+// ADDED build OCI image using Docker
+task docker(type: Exec) {
+    group "OCI"
+    dependsOn bootJar
+    dependsOn "copyDockerfile"
+    workingDir "${buildDir}/libs"
+    commandLine "docker", "build", "-f", "Dockerfile", "-t", "${ownerProject}:${dockerVersion}", "-t", "${ownerProject}:latest", "."
+}
+
+// ADDED build OCI image using Buildah
+task buildah(type: Exec) {
+    group "OCI"
+    dependsOn bootJar
+    dependsOn "copyDockerfile"
+    workingDir "${buildDir}/libs"
+    commandLine "buildah", "bud", "-f", "Dockerfile", "-t", "${ownerProject}:latest", "-t", "docker.io/${ownerProject}:latest","-t", "docker.io/${ownerProject}:${dockerVersion}","-t","ghcr.io/${ownerProject}:latest","-t","ghcr.io/${ownerProject}:${dockerVersion}", "."
+}
+
+// ADDED build OCI image using podman
+task podman(type: Exec) {
+    group "OCI"
+    dependsOn bootJar
+    dependsOn "copyDockerfile"
+    workingDir "${buildDir}/libs"
+    commandLine "podman", "build", "-f", "Dockerfile", "-t", "${ownerProject}:latest", "-t", "docker.io/${ownerProject}:latest","-t", "docker.io/${ownerProject}:${dockerVersion}","-t","ghcr.io/${ownerProject}:latest","-t","ghcr.io/${ownerProject}:${dockerVersion}", "."
+}
