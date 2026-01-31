@@ -44,3 +44,11 @@ gh release delete $todel --cleanup-tag -y
 # delete local tag
 git tag -d $todel
 ```
+
+# Check gradle dependencies
+```
+./gradlew dependencies
+./gradlew dependencies --configuration runtimeClasspath
+./gradlew dependencies --configuration compileClasspath
+./gradlew dependencies --configuration implementation
+```
