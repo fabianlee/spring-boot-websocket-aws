@@ -19,11 +19,11 @@ ext.dockerVersion = project.hasProperty('dockerVersion') ? project.getProperty('
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(25) // compile with 25
+		languageVersion = JavaLanguageVersion.of(25) // compile with JDK25
 	}
 	// https://www.baeldung.com/gradle-sourcecompatiblity-vs-targetcompatibility
-	targetCompatibility = '21' // generate source files compatible with Java 21
-	sourceCompatibility = '21'
+	targetCompatibility = '21' // generate target classes compatible with Java 21
+	sourceCompatibility = '21' // source files need to be compatible with Java 21
 }
 
 repositories {
@@ -50,6 +50,7 @@ task copyDockerfile(type: Copy) {
   into 'build/libs'
 }
 
+// ADDED set ownerProject for use in docker/podman/buildah tasks
 ext.ownerProject = "${dockerOwner}/${project.name}"
 
 // ADDED build OCI image using Docker
@@ -61,7 +62,7 @@ task docker(type: Exec) {
     commandLine "docker", "build", "-f", "Dockerfile", "-t", "${ownerProject}:${dockerVersion}", "-t", "${ownerProject}:latest", "."
 }
 
-// ADDED build OCI image using Buildah
+// ADDED build OCI image using Buildah (not available via brew install on MacOS)
 task buildah(type: Exec) {
     group "OCI"
     dependsOn bootJar
@@ -70,7 +71,7 @@ task buildah(type: Exec) {
     commandLine "buildah", "bud", "-f", "Dockerfile", "-t", "${ownerProject}:latest", "-t", "docker.io/${ownerProject}:latest","-t", "docker.io/${ownerProject}:${dockerVersion}","-t","ghcr.io/${ownerProject}:latest","-t","ghcr.io/${ownerProject}:${dockerVersion}", "."
 }
 
-// ADDED build OCI image using podman
+// ADDED build OCI image using podman (available via brew install on MacOS)
 task podman(type: Exec) {
     group "OCI"
     dependsOn bootJar
