@@ -14,6 +14,7 @@ bootJar {
 }
 
 // ADDED ability to specify docker owner and version on command line
+// https://hub.docker.com/_/eclipse-temurin/tags
 ext.dockerOwner = project.hasProperty('dockerOwner') ? project.getProperty('dockerOwner'):'fabianlee'
 ext.dockerVersion = project.hasProperty('dockerVersion') ? project.getProperty('dockerVersion'):'1.0.0'
 
@@ -33,6 +34,7 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+  implementation 'org.springframework.boot:spring-boot-starter-web'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 	testImplementation 'org.springframework.boot:spring-boot-starter-actuator-test'

@@ -2,7 +2,8 @@
 # Used to build OCI-compatible image using either Docker or Buildah
 #
 # FROM openjdk:19-slim-buster (DEPRECATED! https://github.com/docker-library/openjdk/issues/505)
-FROM eclipse-temurin:19.0.1_10-jdk-jammy
+#FROM eclipse-temurin:19.0.1_10-jdk-jammy
+FROM eclipse-temurin:25.0.1_8-jdk-alpine
 
 # create non-root user and group
 # -l and static IDs assigned to avoid delay in lookups and system logging

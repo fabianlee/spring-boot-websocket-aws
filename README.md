@@ -15,6 +15,11 @@ podman images
 ./gradlew docker [-PdockerVersion=1.0.1 ]
 ```
 
+## Run locally during development
+```
+./gradlew bootJar bootRun
+```
+
 # Creating tag
 
 ```
