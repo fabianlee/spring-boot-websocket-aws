@@ -22,7 +22,7 @@ public class GreetingController {
         try {
             Thread.sleep(2000); // Simulate delay
             // Send second response manually
-            messagingTemplate.convertAndSend("/topic/greetings", new Greeting("Follow-up message"));
+            messagingTemplate.convertAndSend("/topic/greetings", new Greeting("Follow-up for " + message.getName()));
         } catch (InterruptedException e) { e.printStackTrace(); }
     }).start();    
 

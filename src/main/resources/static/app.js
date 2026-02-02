@@ -1,5 +1,5 @@
 const stompClient = new StompJs.Client({
-    brokerURL: 'ws://' + window.location.host + '/gs-guide-websocket'
+    brokerURL: (window.location.protocol === 'https') ? 'wss://':'ws://' + window.location.host + '/gs-guide-websocket'
 });
 
 stompClient.onConnect = (frame) => {
@@ -33,6 +33,7 @@ function setConnected(connected) {
 
 function connect() {
     stompClient.activate();
+    console.log("Activated on websocket ..." + stompClient.brokerURL);
 }
 
 function disconnect() {
