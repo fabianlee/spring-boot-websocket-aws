@@ -11,13 +11,13 @@ ARG THE_USER_ID=1001
 ARG THE_GROUP_ID=1001
 RUN \
   addgroup -g $THE_GROUP_ID spring && \
-  /usr/sbin/useradd -l -u $THE_USER_ID -G spring -g $THE_GROUP_ID spring && \
+  adduser -l -u $THE_USER_ID -G spring -g $THE_GROUP_ID spring && \
   mkdir logs && chgrp spring logs && chmod ug+rwx logs
 
 # no groupadd no longer found in Eclipse Temurin Alpine image, using 'addgroup' instead
 # another alternative would have been: RUN apk add --no-cache shadow
 #   /usr/sbin/groupadd -g $THE_GROUP_ID spring && \
-
+#  /usr/sbin/useradd -l -u $THE_USER_ID -G spring -g $THE_GROUP_ID spring && \
 
 # run as non-root
 USER spring:spring
