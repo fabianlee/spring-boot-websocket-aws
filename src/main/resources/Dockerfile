@@ -11,7 +11,7 @@ ARG THE_USER_ID=1001
 ARG THE_GROUP_ID=1001
 RUN \
   addgroup -g $THE_GROUP_ID spring && \
-  adduser -l -u $THE_USER_ID -G spring -g $THE_GROUP_ID spring && \
+  adduser -u $THE_USER_ID -G spring -g $THE_GROUP_ID spring && \
   mkdir logs && chgrp spring logs && chmod ug+rwx logs
 
 # no groupadd no longer found in Eclipse Temurin Alpine image, using 'addgroup' instead
